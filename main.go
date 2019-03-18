@@ -1,6 +1,8 @@
 package main
 
-//import "C"
+// #include <stdio.h>
+// #include <stdlib.h>
+import "C"
 import (
 	"bytes"
 	"fmt"
@@ -49,19 +51,40 @@ func getDllNew(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("===================== invoke dll =======================")
 	// 去除空格
 	//param = strings.Replace(param, " ", "", -1)
-	// 去除换行符
+	//去除换行符
+	//param = strings.Replace(param, "\n", "", -1)
 	//这个写入到w的是输出到客户端的
 	dll := syscall.NewLazyDLL("NISEC_SKSC.dll")
 	proc := dll.NewProc("PostAndRecvEx")
 	fmt.Println("+++++++NewProc:", proc, "+++++++")
 	var b = make([]byte, 256)
-	//param = strings.Replace(param, "\n", "", -1)
-	ret, _, err := proc.Call(uintptr(unsafe.Pointer(syscall.StringBytePtr(param))), uintptr(unsafe.Pointer(&b[0])))
+	//cs := C.CString("<?xml version=\"1.0\" encoding=\"utf-8\"?><business id=\"20001\" comment=\"参数设置\"><body yylxdm=\"1\"><servletip>tccdzfp.shfapiao.cn</servletip><servletport>80</servletport><keypwd>88888888</keypwd></body></business>")
+	n := "<?xml version=\"1.0\" encoding=\"utf-8\"?><business id=\"20001\" comment=\"参数设置\"><body yylxdm=\"1\"><servletip>tccdzfp.shfapiao.cn</servletip><servletport>80</servletport><keypwd>88888888</keypwd></body></business>"
+	//str := C.GoString(unsafe.Pointer(&b[0]))
+	//result := C.PostAndRecvEx(cs, str)
+	println("param:", param)
+	//println(cs)
+	//bytePath := []byte(n + "\x000")
+	//str := "A"
+	bin := make([]byte, len(n)+1)
+	copy(bin, n)
+	//ret, _, err := proc.Call(uintptr(unsafe.Pointer(cs)), uintptr(unsafe.Pointer(&b[0])))
+	//ret, _, err := proc.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(n))), uintptr(unsafe.Pointer(&b[0])))
+	ret, _, err := proc.Call(uintptr(unsafe.Pointer(&bin[0])), uintptr(unsafe.Pointer(&b[0])))
+	//C.free(unsafe.Pointer(cs))
+	//ret, _, err := proc.Call(uintptr(unsafe.Pointer(syscall.StringBytePtr(param))), uintptr(unsafe.Pointer(&b[0])))
 	if err != nil {
 		fmt.Println("出参为:", ConvertByte2String(b, GB18030))
 		fmt.Println("NISEC_SKSC.dll 结果为:", ret)
 	}
 	println("=========== over ============ ")
+}
+
+func copyToByteArray() {
+	n := "hah"
+	bin := make([]byte, len(n)+1)
+	copy(bin, n)
+	//unsafe.Pointer(&bin[0])
 }
 
 func hexStringToBytes(s string) []byte {
