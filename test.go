@@ -13,6 +13,11 @@ func main() {
 	cs := C.CString("你好")
 	C.free(unsafe.Pointer(cs))
 	println(cs)
+	// 去除空格
+	//param = strings.Replace(param, " ", "", -1)
+	//去除换行符
+	//param = strings.Replace(param, "\n", "", -1)
+	//这个写入到w的是输出到客户端的
 	//str := C.GoString(unsafe.Pointer(&b[0]))
 	//result := C.PostAndRecvEx(cs, str)
 	////bytePath := []byte(n + "\x00")
