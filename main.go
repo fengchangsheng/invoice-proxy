@@ -33,7 +33,14 @@ type Business struct {
 		//Yylxdm     string `xml:"yylxdm,attr"`
 		Returncode string `xml:"returncode" json:"returncode"`
 		Returnmsg  string `xml:"returnmsg" json:"returnmsg"`
+		Returndata Returndata
 	} `xml:"body" json:"body"`
+}
+
+type Returndata struct {
+	XMLName xml.Name `xml:"returndata" json:"returndata"`
+	Dqfpdm  string   `json:"dqfpdm" json:"dqfpdm"`
+	Dqfphm  string   `json:"dqfphm" json:"dqfphm"`
 }
 
 func main() {
@@ -64,7 +71,7 @@ func getDllNew(w http.ResponseWriter, r *http.Request) {
 	dll := syscall.NewLazyDLL("NISEC_SKSC.dll")
 	proc := dll.NewProc("PostAndRecvEx")
 	fmt.Println("+++++++NewProc:", proc, "+++++++")
-	var b = make([]byte, 256)
+	var b = make([]byte, 512)
 	//n := "<?xml version=\"1.0\" encoding=\"utf-8\"?><business id=\"20001\" comment=\"参数设置\"><body yylxdm=\"1\"><servletip>tccdzfp.shfapiao.cn</servletip><servletport>80</servletport><keypwd>88888888</keypwd></body></business>"
 	println("param:", param)
 	data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(param)), simplifiedchinese.GBK.NewEncoder()))
@@ -98,7 +105,7 @@ func getDllNew(w http.ResponseWriter, r *http.Request) {
 }
 
 func ConvertByte2String(byte []byte, charset Charset) string {
-
+	println("============ len ==============", bytes.Count(byte, nil)-1)
 	var str string
 	switch charset {
 	case GB18030:

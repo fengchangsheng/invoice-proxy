@@ -11,7 +11,7 @@ import (
 
 func main() {
 	cs := C.CString("你好")
-	C.free(unsafe.Pointer(cs))
+	defer C.free(unsafe.Pointer(cs))
 	println(cs)
 	// 去除空格
 	//param = strings.Replace(param, " ", "", -1)
